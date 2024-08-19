@@ -23,7 +23,7 @@ class AttachmentExtractor(BaseExtractor):
         """
         attachments = []
         for (ele, _, href, *_) in element.iterlinks():
-            title = ele.get('title', '')
+            title = ele.text or ele.get('title', '')
             if (
                     re.search(FILE_PATTERN, href)
                     or re.search(FILE_PATTERN, title)
