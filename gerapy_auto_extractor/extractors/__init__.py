@@ -5,7 +5,7 @@ from gerapy_auto_extractor.extractors.attachment import extract_attachment
 from gerapy_auto_extractor.extractors.list import extract_list
 
 
-def extract_detail(html):
+def extract_detail(html, **kwargs):
     """
     extract detail information
     :param html:
@@ -16,5 +16,5 @@ def extract_detail(html):
         'datetime': extract_datetime(html),
         # 'content': extract_content(html),
         'content_html': extract_content_html(html),
-        'attachment': extract_attachment(html)
+        'attachment': extract_attachment(html, **kwargs)
     }

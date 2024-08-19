@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urljoin
 
 from gerapy_auto_extractor.extractors.base import BaseExtractor
 from lxml.html import HtmlElement
@@ -28,6 +29,9 @@ class AttachmentExtractor(BaseExtractor):
                     re.search(FILE_PATTERN, href)
                     or re.search(FILE_PATTERN, title)
             ):
+                base_url = self.kwargs.get('base_url')
+                if base_url:
+                    href = urljoin(base_url, href)
                 attachments.append({
                     'name': title,
                     'href': href
@@ -38,11 +42,11 @@ class AttachmentExtractor(BaseExtractor):
 attachment_extractor = AttachmentExtractor()
 
 
-def extract_attachment(html):
+def extract_attachment(html, **kwargs):
     """
     extract attachment from html
     :param html:
     :return:
     """
-    result = attachment_extractor.extract(html)
+    result = attachment_extractor.extract(html, **kwargs)
     return result
