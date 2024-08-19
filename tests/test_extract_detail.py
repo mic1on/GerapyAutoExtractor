@@ -33,6 +33,7 @@ class TestExtractDetail(TestBase):
         html = self.html('gov_news.html')
         # element = html2element(html)
         detail = extract_detail(html)
+        detail['content_html'] = detail['content_html'][:120]
         pprint(detail)
 
 

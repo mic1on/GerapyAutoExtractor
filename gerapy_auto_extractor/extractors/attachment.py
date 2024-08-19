@@ -2,6 +2,8 @@ import re
 
 from gerapy_auto_extractor.extractors.base import BaseExtractor
 from lxml.html import HtmlElement
+
+from gerapy_auto_extractor.patterns.attachment import FILE_PATTERN
 from gerapy_auto_extractor.patterns.title import METAS
 from gerapy_auto_extractor.utils.element import children, a_descendants
 from gerapy_auto_extractor.utils.lcs import lcs_of_2
@@ -12,15 +14,25 @@ class AttachmentExtractor(BaseExtractor):
     """
     attachment Extractor which extract attachment of page
     """
+
     def process(self, element: HtmlElement):
         """
         extract attachment from element
         :param element:
         :return:
         """
-        for linked_descendant in element.a_descendants:
-            pass
-        pass
+        attachments = []
+        for (ele, _, href, *_) in element.iterlinks():
+            title = ele.get('title', '')
+            if (
+                    re.search(FILE_PATTERN, href)
+                    or re.search(FILE_PATTERN, title)
+            ):
+                attachments.append({
+                    'name': title,
+                    'href': href
+                })
+        return attachments
 
 
 attachment_extractor = AttachmentExtractor()
