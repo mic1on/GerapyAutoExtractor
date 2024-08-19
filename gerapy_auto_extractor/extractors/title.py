@@ -1,15 +1,18 @@
+import re
+
 from gerapy_auto_extractor.extractors.base import BaseExtractor
 from lxml.html import HtmlElement
 from gerapy_auto_extractor.patterns.title import METAS
 from gerapy_auto_extractor.utils.lcs import lcs_of_2
-from gerapy_auto_extractor.utils.similarity import similarity2
+from gerapy_auto_extractor.utils.similarity import similarity2, get_longest_common_sub_string
 
 
 class TitleExtractor(BaseExtractor):
     """
     Title Extractor which extract title of page
     """
-    
+    TITLE_HTAG_XPATH = '//h1//text() | //h2//text() | //h3//text() | //h4//text()'
+
     def extract_by_meta(self, element: HtmlElement) -> str:
         """
         extract according to meta
@@ -20,15 +23,15 @@ class TitleExtractor(BaseExtractor):
             title = element.xpath(xpath)
             if title:
                 return ''.join(title)
-    
+
     def extract_by_title(self, element: HtmlElement):
         """
         get title from <title> tag
         :param element:
         :return:
         """
-        return ''.join(element.xpath('//title//text()')).strip()
-    
+        return ''.join(element.xpath('//title//text()')).replace('\t', '').strip()
+
     def extract_by_hs(self, element: HtmlElement):
         """
         get title from all h1-h3 tag
@@ -37,7 +40,7 @@ class TitleExtractor(BaseExtractor):
         """
         hs = element.xpath('//h1//text()|//h2//text()|//h3//text()')
         return hs or []
-    
+
     def extract_by_h(self, element: HtmlElement):
         """
         extract by h tag, priority h1, h2, h3
@@ -52,33 +55,44 @@ class TitleExtractor(BaseExtractor):
             texts = child.xpath('./text()')
             if texts and len(texts):
                 return texts[0].strip()
-    
+
+    def extract_by_htag_and_title(self, element: HtmlElement) -> str:
+        h_tag_texts_list = element.xpath('(//h1//text() | //h2//text() | //h3//text() | //h4//text() | //h5//text())')
+        title_text = ''.join(element.xpath('//title/text()'))
+        title_text = title_text.strip().replace('\t', '')
+        news_title = ''
+        for h_tag_text in h_tag_texts_list:
+            lcs = get_longest_common_sub_string(title_text, h_tag_text)
+            if len(lcs) > len(news_title):
+                news_title = lcs
+        return news_title if len(news_title) > 4 else ''
+
+    def extract_by_title(self, element):
+        title_list = element.xpath('//title/text()')
+        if not title_list:
+            return ''
+        title = re.split('[-_|]', title_list[0])
+        return max(title, key=lambda x: len(x))
+
+    def extract_by_htag(self, element):
+        title_list = element.xpath(self.TITLE_HTAG_XPATH)
+        if not title_list:
+            return ''
+        return title_list[0]
+
     def process(self, element: HtmlElement):
         """
         extract title from element
         :param element:
         :return:
         """
-        title_extracted_by_meta = self.extract_by_meta(element)
-        title_extracted_by_h = self.extract_by_h(element)
-        title_extracted_by_hs = self.extract_by_hs(element)
-        title_extracted_by_title = self.extract_by_title(element)
-        
-        # split logic to add more
-        if title_extracted_by_meta:
-            return title_extracted_by_meta
-        
-        # get most similar h
-        title_extracted_by_hs = sorted(title_extracted_by_hs,
-                                       key=lambda x: similarity2(x, title_extracted_by_title),
-                                       reverse=True)
-        if title_extracted_by_hs:
-            return lcs_of_2(title_extracted_by_hs[0], title_extracted_by_title)
-        
-        if title_extracted_by_title:
-            return title_extracted_by_title
-        
-        return title_extracted_by_h
+        title = (self.extract_by_meta(element)
+                 or self.extract_by_htag_and_title(element)
+                 or self.extract_by_title(element)
+                 or self.extract_by_htag(element)
+                 )
+        title = title.strip()
+        return title
 
 
 title_extractor = TitleExtractor()

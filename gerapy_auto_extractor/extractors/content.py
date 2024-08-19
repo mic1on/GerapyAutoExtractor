@@ -5,7 +5,7 @@ from gerapy_auto_extractor.extractors.base import BaseExtractor
 from gerapy_auto_extractor.utils.element import descendants_of_body
 
 
-class ContentExtractor(BaseExtractor):
+class BaseContentExtractor(BaseExtractor):
     """
     extract content from detail page
     """
@@ -40,7 +40,21 @@ class ContentExtractor(BaseExtractor):
         descendant_first = descendants[0] if descendants else None
         if descendant_first is None:
             return None
-        paragraphs = descendant_first.xpath('.//p//text()')
+        return descendant_first
+
+
+class ContentExtractor(BaseContentExtractor):
+
+    def process(self, element: Element):
+        """
+        extract content from html
+        :param element:
+        :return:
+        """
+        element = super().process(element)
+        if element is None:
+            return None
+        paragraphs = element.xpath('.//p//text()')
         paragraphs = [paragraph.strip() if paragraph else '' for paragraph in paragraphs]
         paragraphs = list(filter(lambda x: x, paragraphs))
         text = '\n'.join(paragraphs)
@@ -48,7 +62,21 @@ class ContentExtractor(BaseExtractor):
         return text
 
 
+class ContentHTMLExtractor(BaseContentExtractor):
+    def process(self, element: Element):
+        """
+        extract content from html
+        :param element:
+        :return:
+        """
+        element = super().process(element)
+        if element is None:
+            return None
+        return self.to_string(element)
+
+
 content_extractor = ContentExtractor()
+content_html_extractor = ContentHTMLExtractor()
 
 
 def extract_content(html):
@@ -57,3 +85,11 @@ def extract_content(html):
     :return:
     """
     return content_extractor.extract(html)
+
+
+def extract_content_html(html):
+    """
+    extract content from detail html
+    :return:
+    """
+    return content_html_extractor.extract(html)
