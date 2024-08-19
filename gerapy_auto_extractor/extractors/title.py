@@ -2,16 +2,14 @@ import re
 
 from gerapy_auto_extractor.extractors.base import BaseExtractor
 from lxml.html import HtmlElement
-from gerapy_auto_extractor.patterns.title import METAS
-from gerapy_auto_extractor.utils.lcs import lcs_of_2
-from gerapy_auto_extractor.utils.similarity import similarity2, get_longest_common_sub_string
+from gerapy_auto_extractor.patterns.title import METAS, TITLE_HTAG_XPATH
+from gerapy_auto_extractor.utils.similarity import get_longest_common_sub_string
 
 
 class TitleExtractor(BaseExtractor):
     """
     Title Extractor which extract title of page
     """
-    TITLE_HTAG_XPATH = '//h1//text() | //h2//text() | //h3//text() | //h4//text()'
 
     def extract_by_meta(self, element: HtmlElement) -> str:
         """
@@ -75,7 +73,7 @@ class TitleExtractor(BaseExtractor):
         return max(title, key=lambda x: len(x))
 
     def extract_by_htag(self, element):
-        title_list = element.xpath(self.TITLE_HTAG_XPATH)
+        title_list = element.xpath(TITLE_HTAG_XPATH)
         if not title_list:
             return ''
         return title_list[0]

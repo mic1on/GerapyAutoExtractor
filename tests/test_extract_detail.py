@@ -13,7 +13,6 @@ from gerapy_auto_extractor.extractors.content import content_html_extractor
 from gerapy_auto_extractor.extractors import extract_detail
 
 
-
 class TestExtractDetail(TestBase):
     samples_dir = SAMPLES_DETAIL_DIR
 
@@ -34,6 +33,7 @@ class TestExtractDetail(TestBase):
         html = self.html('gov_news.html')
         # element = html2element(html)
         detail = extract_detail(html)
+        detail['content_html'] = detail['content_html'][:120]
         pprint(detail)
 
 
