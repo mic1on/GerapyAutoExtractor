@@ -5,3 +5,5 @@ METAS = [
     '//meta[starts-with(@name, "title")]/@content',
     '//meta[starts-with(@property, "page:title")]/@content',
 ]
+
+TITLE_HTAG_XPATH = '//h1//text() | //h2//text() | //h3//text() | //h4//text()'

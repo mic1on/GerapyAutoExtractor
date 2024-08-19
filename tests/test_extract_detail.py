@@ -13,7 +13,6 @@ from gerapy_auto_extractor.extractors.content import content_html_extractor
 from gerapy_auto_extractor.extractors import extract_detail
 
 
-
 class TestExtractDetail(TestBase):
     samples_dir = SAMPLES_DETAIL_DIR
 
