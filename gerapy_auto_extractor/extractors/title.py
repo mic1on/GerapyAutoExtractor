@@ -11,6 +11,18 @@ class TitleExtractor(BaseExtractor):
     Title Extractor which extract title of page
     """
 
+    def extract_by_xpath(self, element: HtmlElement) -> str:
+        """
+        extract title by xpath
+        :param element:
+        :return:
+        """
+        xpath = self.kwargs.get("title_xpath")
+        if not xpath:
+            return ''
+        title = element.xpath(xpath)
+        return title[0] if title else ''
+
     def extract_by_meta(self, element: HtmlElement) -> str:
         """
         extract according to meta
@@ -84,7 +96,8 @@ class TitleExtractor(BaseExtractor):
         :param element:
         :return:
         """
-        title = (self.extract_by_meta(element)
+        title = (self.extract_by_xpath(element)
+                 or self.extract_by_meta(element)
                  or self.extract_by_htag_and_title(element)
                  or self.extract_by_title(element)
                  or self.extract_by_htag(element)
@@ -96,11 +109,11 @@ class TitleExtractor(BaseExtractor):
 title_extractor = TitleExtractor()
 
 
-def extract_title(html):
+def extract_title(html, **kwargs):
     """
     extract title from html
     :param html:
     :return:
     """
-    result = title_extractor.extract(html)
+    result = title_extractor.extract(html, **kwargs)
     return result

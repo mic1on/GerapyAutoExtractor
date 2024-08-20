@@ -12,8 +12,8 @@ def extract_detail(html, **kwargs):
     :return:
     """
     return {
-        'title': extract_title(html),
-        'datetime': extract_datetime(html),
+        'title': extract_title(html, **kwargs),
+        'datetime': extract_datetime(html, **kwargs),
         # 'content': extract_content(html),
         'content_html': extract_content_html(html, **kwargs),
         'attachment': extract_attachment(html, **kwargs)
