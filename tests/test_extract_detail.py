@@ -32,7 +32,7 @@ class TestExtractDetail(TestBase):
     def test_extract_detail(self):
         html = self.html('gov_news.html')
         # element = html2element(html)
-        detail = extract_detail(html)
+        detail = extract_detail(html, content_xpath="//div[@class='mainbox']")
         detail['content_html'] = detail['content_html'][:120]
         pprint(detail)
 

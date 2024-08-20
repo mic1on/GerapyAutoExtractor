@@ -16,6 +16,11 @@ class BaseContentExtractor(BaseExtractor):
         :param element:
         :return:
         """
+        if content_xpath := self.kwargs.get("content_xpath"):
+            descendants = element.xpath(content_xpath)
+            descendant_first = descendants[0] if descendants else None
+            if descendant_first is not None:
+                return descendant_first
         # preprocess
         preprocess4content_extractor(element)
         
@@ -79,17 +84,17 @@ content_extractor = ContentExtractor()
 content_html_extractor = ContentHTMLExtractor()
 
 
-def extract_content(html):
+def extract_content(html, **kwargs):
     """
     extract content from detail html
     :return:
     """
-    return content_extractor.extract(html)
+    return content_extractor.extract(html, **kwargs)
 
 
-def extract_content_html(html):
+def extract_content_html(html, **kwargs):
     """
     extract content from detail html
     :return:
     """
-    return content_html_extractor.extract(html)
+    return content_html_extractor.extract(html, **kwargs)

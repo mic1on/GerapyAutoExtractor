@@ -15,6 +15,6 @@ def extract_detail(html, **kwargs):
         'title': extract_title(html),
         'datetime': extract_datetime(html),
         # 'content': extract_content(html),
-        'content_html': extract_content_html(html),
+        'content_html': extract_content_html(html, **kwargs),
         'attachment': extract_attachment(html, **kwargs)
     }
