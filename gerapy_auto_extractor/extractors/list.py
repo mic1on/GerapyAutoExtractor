@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from gerapy_auto_extractor.utils.cluster import cluster_dict
 from gerapy_auto_extractor.utils.preprocess import preprocess4list_extractor
 from gerapy_auto_extractor.extractors.base import BaseExtractor
-from gerapy_auto_extractor.utils.element import descendants_of_body
+from gerapy_auto_extractor.utils.element import descendants_of_body, descendants_of, descendants as _descendants
 from gerapy_auto_extractor.schemas.element import Element
 
 LIST_MIN_NUMBER = 5
@@ -47,13 +47,17 @@ class ListExtractor(BaseExtractor):
         sigma = 6
         return np.exp(-1 * ((length - self.avg_length) ** 2) / (2 * (sigma ** 2))) / (math.sqrt(2 * np.pi) * sigma)
     
-    def _build_clusters(self, element):
+    def _build_clusters(self, element, base_xpath: str):
         """
         build candidate clusters according to element
         :return:
         """
         descendants_tree = defaultdict(list)
-        descendants = descendants_of_body(element)
+        if base_xpath:
+            descendants = descendants_of(element, base_xpath)
+        else:
+            descendants = descendants_of_body(element)
+        logger.log('inspect', f'descendants {descendants}')
         for descendant in descendants:
             # if one element does not have enough siblings, it can not become a child of candidate element
             if descendant.number_of_siblings + 1 < self.min_number:
@@ -183,7 +187,7 @@ class ListExtractor(BaseExtractor):
                 # TODO: add more quota to calculate probability_of_title
                 probability_of_title = probability_of_title_with_length
                 probabilities_of_title[path].append(probability_of_title)
-        
+
         # get most probable tag_path
         probabilities_of_title_avg = {k: np.mean(v) for k, v in probabilities_of_title.items()}
         if not probabilities_of_title_avg:
@@ -220,11 +224,12 @@ class ListExtractor(BaseExtractor):
         :param element:
         :return:
         """
+        base_xpath = self.kwargs.get("base_xpath")
         # preprocess
         preprocess4list_extractor(element)
         
         # build clusters
-        clusters = self._build_clusters(element)
+        clusters = self._build_clusters(element, base_xpath)
         logger.log('inspect', f'after build clusters {clusters}')
         
         # choose best cluster

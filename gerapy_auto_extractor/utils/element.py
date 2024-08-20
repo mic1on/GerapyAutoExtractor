@@ -249,20 +249,29 @@ def children_of_head(element: Element):
     return []
 
 
+def descendants_of(element: Element, base_xpath: str):
+    """
+    get descendants element of base xpath
+    :param element:
+    :param base_xpath:
+    :return:
+    """
+    if element is None:
+        return []
+    elements = element.xpath(base_xpath)
+    if elements:
+        elements[0].__class__ = Element
+        return list(descendants(elements[0], True))
+    return []
+
+
 def descendants_of_body(element: Element):
     """
     get descendants element of body element
     :param element:
     :return:
     """
-    if element is None:
-        return []
-    body_xpath = '//body'
-    elements = element.xpath(body_xpath)
-    if elements:
-        elements[0].__class__ = Element
-        return list(descendants(elements[0], True))
-    return []
+    return descendants_of(element, '//body')
 
 
 def text(element: Element):
@@ -480,7 +489,7 @@ def density_of_text(element: Element):
     if element.number_of_descendants - element.number_of_a_descendants == 0:
         return 0
     return (element.number_of_char - element.number_of_a_char) / \
-           (element.number_of_descendants - element.number_of_a_descendants)
+        (element.number_of_descendants - element.number_of_a_descendants)
 
 
 def density_of_punctuation(element: Element):
