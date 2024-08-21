@@ -79,6 +79,8 @@ def selector(element: Element):
     p = parent(element)
     if p is not None:
         return selector(p) + '>' + alias(element)
+    if not isinstance(element, Element):
+        element.__class__ = Element
     return element.alias
 
 
