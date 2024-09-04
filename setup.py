@@ -20,12 +20,12 @@ def read_requirements(filename):
             if not line.startswith('#')]
 
 
-NAME = 'gerapy-auto-extractor'
+NAME = 'ml-auto-extractor'
 FOLDER = 'gerapy_auto_extractor'
 DESCRIPTION = 'An extractor to extract list, title, content, date, etc info without XPath or Selector'
 URL = 'https://github.com/Gerapy/GerapyAutoExtractor'
 EMAIL = 'cqc@cuiqingcai.com'
-AUTHOR = 'Germey'
+AUTHOR = 'Germey,MicLon'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
