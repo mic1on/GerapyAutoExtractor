@@ -20,9 +20,12 @@ class DatetimeExtractor(BaseExtractor):
         xpath = self.kwargs.get("datetime_xpath")
         if not xpath:
             return ''
-        title = element.xpath(xpath)
-        return title[0] if title else ''
-    
+        text = element.xpath(xpath)
+        for regex in REGEXES:
+            result = re.search(regex, text)
+            if result:
+                return result.group(1)
+
     def extract_by_regex(self, element: HtmlElement) -> str:
         """
         extract datetime according to predefined regex
@@ -76,13 +79,13 @@ def parse_datetime(datetime):
         logger.exception(f'Error Occurred while parsing datetime extracted. datetime is {datetime}')
 
 
-def extract_datetime(html, parse=True, **kwargs):
+def extract_datetime(html, **kwargs):
     """
     extract datetime from html
-    :param parse:
     :param html:
     :return:
     """
+    parse = kwargs.get('parse', True)
     result = datetime_extractor.extract(html, **kwargs)
     if not parse:
         return result
