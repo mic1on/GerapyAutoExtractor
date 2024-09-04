@@ -20,7 +20,7 @@ class DatetimeExtractor(BaseExtractor):
         xpath = self.kwargs.get("datetime_xpath")
         if not xpath:
             return ''
-        text = element.xpath(xpath)
+        text = ''.join(element.xpath(xpath))
         for regex in REGEXES:
             result = re.search(regex, text)
             if result:
