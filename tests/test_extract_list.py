@@ -67,6 +67,15 @@ class TestExtractList(TestBase):
         print(jsonify(result), len(result))
         self.assertEqual(len(result), 56)
 
+    def test_zhihu_search_result_custom_item_loader(self):
+
+        def item_loader(node):
+            return {"title": "test", "url": "http://www.zhihu.com"}
+        html = self.html('zhihu_search_result.html')
+        result = extract_list(html, item_loader=item_loader)
+        print(jsonify(result), len(result))
+        self.assertEqual(len(result), 10)
+
 
 if __name__ == '__main__':
     unittest.main()
