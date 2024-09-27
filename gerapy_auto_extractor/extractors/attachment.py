@@ -24,7 +24,8 @@ class AttachmentExtractor(BaseExtractor):
         """
         attachments = []
         for (ele, _, href, *_) in element.iterlinks():
-            title = ele.text or ele.get('title', '')
+            title = ele.text or ele.get('title', '') or ele.xpath('string()')
+            title = title.strip()
             if (
                     re.search(FILE_PATTERN, href)
                     or re.search(FILE_PATTERN, title)

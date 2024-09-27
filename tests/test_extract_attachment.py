@@ -10,12 +10,20 @@ from tests.settings import SAMPLES_DETAIL_DIR
 from tests.test_base import TestBase
 from gerapy_auto_extractor.extractors.attachment import attachment_extractor
 
+attachment_extractor.kwargs = {}
+
 
 class TestExtractAttachment(TestBase):
     samples_dir = SAMPLES_DETAIL_DIR
 
     def test_extract_attachment(self):
         html = self.html('gov_news.html')
+        element = html2element(html)
+        attachment = attachment_extractor.process(element)
+        print('attachment', attachment)
+
+    def test_extract_attachment2(self):
+        html = self.html('mohrss.html')
         element = html2element(html)
         attachment = attachment_extractor.process(element)
         print('attachment', attachment)
