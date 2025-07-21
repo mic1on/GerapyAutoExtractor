@@ -181,6 +181,7 @@ class ListExtractor(BaseExtractor):
         url = node.attrib.get("href")
         if not url:
             return
+        url = url.strip()
         if url.startswith("//"):
             url = "http:" + url
         base_url = self.kwargs.get("base_url")
